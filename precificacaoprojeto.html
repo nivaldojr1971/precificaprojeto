@@ -1,0 +1,1354 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orçamento Projeto Estrutural | Sistema Profissional</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fontsource-inter@5.0.0/index.css">
+    <style>
+        :root {
+            --primary: #0f172a;
+            --primary-light: #1e293b;
+            --accent: #3b82f6;
+            --accent-hover: #2563eb;
+            --accent-light: #dbeafe;
+            --success: #10b981;
+            --success-hover: #059669;
+            --danger: #ef4444;
+            --danger-hover: #dc2626;
+            --gray-50: #f8fafc;
+            --gray-100: #f1f5f9;
+            --gray-200: #e2e8f0;
+            --gray-300: #cbd5e1;
+            --gray-400: #94a3b8;
+            --gray-500: #64748b;
+            --gray-600: #475569;
+            --gray-700: #334155;
+            --gray-800: #1e293b;
+            --gray-900: #0f172a;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-md: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+            --shadow-xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+            --radius: 12px;
+            --radius-lg: 16px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: var(--gray-800);
+            line-height: 1.6;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(59, 130, 246, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(16, 185, 129, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .app-header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: var(--radius-lg);
+            padding: 30px 40px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border: 1px solid var(--gray-200);
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .logo-icon {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-hover) 100%);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 16px rgba(59, 130, 246, 0.3);
+        }
+
+        .logo-icon svg {
+            width: 32px;
+            height: 32px;
+            fill: white;
+        }
+
+        .logo-text h1 {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--gray-900);
+            letter-spacing: -0.5px;
+        }
+
+        .logo-text p {
+            font-size: 13px;
+            color: var(--gray-500);
+            font-weight: 500;
+        }
+
+        .header-badge {
+            background: var(--accent-light);
+            color: var(--accent);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .header-badge::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: var(--accent);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: var(--radius-lg);
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--gray-200);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid var(--gray-100);
+        }
+
+        .card-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--accent-light);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .card-icon svg {
+            width: 22px;
+            height: 22px;
+            stroke: var(--accent);
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--gray-900);
+            letter-spacing: -0.3px;
+        }
+
+        .card-subtitle {
+            font-size: 13px;
+            color: var(--gray-500);
+            font-weight: 400;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--gray-700);
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-group label .required {
+            color: var(--danger);
+        }
+
+        .form-group input,
+        .form-group select {
+            padding: 12px 16px;
+            border: 2px solid var(--gray-200);
+            border-radius: 10px;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            background: white;
+            font-family: inherit;
+            color: var(--gray-800);
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper .prefix {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray-500);
+            font-weight: 600;
+            font-size: 14px;
+            pointer-events: none;
+        }
+
+        .input-wrapper input {
+            padding-left: 44px;
+        }
+
+        .input-wrapper .suffix {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray-500);
+            font-weight: 500;
+            font-size: 13px;
+            pointer-events: none;
+        }
+
+        .complexity-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .complexity-item {
+            display: grid;
+            grid-template-columns: 2fr 100px 100px 1fr auto;
+            gap: 12px;
+            align-items: center;
+            padding: 16px;
+            background: var(--gray-50);
+            border-radius: 12px;
+            border: 2px solid var(--gray-100);
+            transition: all 0.2s ease;
+        }
+
+        .complexity-item:hover {
+            border-color: var(--accent);
+            background: white;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .complexity-item select,
+        .complexity-item input {
+            padding: 10px 12px;
+            border: 2px solid var(--gray-200);
+            border-radius: 8px;
+            font-size: 13px;
+            background: white;
+            font-family: inherit;
+            color: var(--gray-800);
+        }
+
+        .complexity-item select:focus,
+        .complexity-item input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .complexity-item .value-display {
+            padding: 10px 12px;
+            background: white;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 600;
+            color: var(--accent);
+            font-size: 13px;
+            border: 2px solid var(--gray-200);
+        }
+
+        .complexity-item .percent-display {
+            padding: 10px 12px;
+            background: var(--accent-light);
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 600;
+            color: var(--accent);
+            font-size: 13px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: inherit;
+        }
+
+        .btn svg {
+            width: 18px;
+            height: 18px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .btn-primary:hover {
+            background: var(--accent-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
+        }
+
+        .btn-danger {
+            background: var(--gray-100);
+            color: var(--danger);
+            padding: 10px 14px;
+            font-size: 12px;
+        }
+
+        .btn-danger:hover {
+            background: #fee2e2;
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-success:hover {
+            background: var(--success-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
+        }
+
+        .btn-secondary {
+            background: var(--gray-100);
+            color: var(--gray-700);
+        }
+
+        .btn-secondary:hover {
+            background: var(--gray-200);
+        }
+
+        .btn-pdf {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+            padding: 16px 32px;
+            font-size: 15px;
+            box-shadow: 0 8px 20px rgba(239, 68, 68, 0.3);
+        }
+
+        .btn-pdf:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 28px rgba(239, 68, 68, 0.4);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px dashed var(--gray-300);
+            color: var(--gray-600);
+            width: 100%;
+            justify-content: center;
+            padding: 14px;
+        }
+
+        .btn-outline:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: var(--accent-light);
+        }
+
+        .summary-box {
+            background: linear-gradient(135deg, var(--gray-50) 0%, white 100%);
+            border-radius: 12px;
+            padding: 24px;
+            margin-top: 20px;
+            border: 2px solid var(--gray-200);
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 0;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .summary-row:last-child {
+            border-bottom: none;
+        }
+
+        .summary-label {
+            font-weight: 500;
+            color: var(--gray-600);
+            font-size: 14px;
+        }
+
+        .summary-value {
+            font-weight: 700;
+            color: var(--gray-900);
+            font-size: 16px;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .total-final {
+            background: linear-gradient(135deg, var(--success) 0%, var(--success-hover) 100%);
+            color: white;
+            padding: 24px;
+            border-radius: 12px;
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 8px 24px rgba(16, 185, 129, 0.3);
+        }
+
+        .total-final .summary-label {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 16px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .total-final .summary-value {
+            color: white;
+            font-size: 28px;
+            font-weight: 800;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+            flex-wrap: wrap;
+        }
+
+        .loading-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(8px);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .loading-overlay.active {
+            display: flex;
+        }
+
+        .loading-content {
+            text-align: center;
+            background: white;
+            padding: 40px 60px;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid var(--gray-200);
+            border-top: 4px solid var(--accent);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            color: var(--gray-700);
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .loading-subtext {
+            color: var(--gray-500);
+            font-size: 13px;
+            margin-top: 8px;
+        }
+
+        .toast {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            background: white;
+            padding: 16px 24px;
+            border-radius: 12px;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 3000;
+            transform: translateX(120%);
+            transition: transform 0.3s ease;
+            border-left: 4px solid var(--success);
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast.error {
+            border-left-color: var(--danger);
+        }
+
+        .toast-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .toast-icon svg {
+            width: 18px;
+            height: 18px;
+            stroke: white;
+            fill: none;
+            stroke-width: 2.5;
+        }
+
+        .toast.success .toast-icon {
+            background: var(--success);
+        }
+
+        .toast.error .toast-icon {
+            background: var(--danger);
+        }
+
+        .toast-text {
+            font-weight: 600;
+            color: var(--gray-800);
+            font-size: 14px;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 12px;
+            }
+
+            .app-header {
+                flex-direction: column;
+                gap: 16px;
+                padding: 24px;
+                text-align: center;
+            }
+
+            .card {
+                padding: 24px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .complexity-item {
+                grid-template-columns: 1fr;
+            }
+
+            .total-final {
+                flex-direction: column;
+                text-align: center;
+                gap: 12px;
+            }
+
+            .actions {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--gray-400);
+        }
+
+        .empty-state svg {
+            width: 48px;
+            height: 48px;
+            stroke: var(--gray-300);
+            fill: none;
+            stroke-width: 1.5;
+            margin-bottom: 12px;
+        }
+
+        .empty-state p {
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="app-header fade-in">
+            <div class="logo-section">
+                <div class="logo-icon">
+                    <svg viewBox="0 0 24 24"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-6h6v6M9 9h.01M15 9h.01M9 13h.01M15 13h.01"/></svg>
+                </div>
+                <div class="logo-text">
+                    <h1>Projeto Estrutural</h1>
+                    <p>Sistema Profissional de Precificação</p>
+                </div>
+            </div>
+            <div class="header-badge">
+                Sistema Ativo
+            </div>
+        </header>
+
+        <div class="card fade-in">
+            <div class="card-header">
+                <div class="card-icon">
+                    <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                </div>
+                <div>
+                    <div class="card-title">Informações do Cliente</div>
+                    <div class="card-subtitle">Dados de identificação do projeto</div>
+                </div>
+            </div>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Cliente <span class="required">*</span></label>
+                    <input type="text" id="cliente" placeholder="Nome completo do cliente">
+                </div>
+                <div class="form-group">
+                    <label>Orçamento Nº</label>
+                    <input type="text" id="orcamentoNum" placeholder="Nº do orçamento">
+                </div>
+                <div class="form-group">
+                    <label>Elaborado Por <span class="required">*</span></label>
+                    <input type="text" id="elaboradoPor" placeholder="Nome do engenheiro">
+                </div>
+                <div class="form-group">
+                    <label>Data</label>
+                    <input type="date" id="dataOrcamento">
+                </div>
+            </div>
+        </div>
+
+        <div class="card fade-in">
+            <div class="card-header">
+                <div class="card-icon">
+                    <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                </div>
+                <div>
+                    <div class="card-title">Dados do Projeto</div>
+                    <div class="card-subtitle">Características da edificação</div>
+                </div>
+            </div>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Tipo de Projeto</label>
+                    <select id="descricao">
+                        <option value="Residência Alto Padrão">Residência Alto Padrão</option>
+                        <option value="Residência Padrão">Residência Padrão</option>
+                        <option value="Residência Econômica">Residência Econômica</option>
+                        <option value="Comercial">Comercial</option>
+                        <option value="Industrial">Industrial</option>
+                        <option value="Outro">Outro</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Área Construída <span class="required">*</span></label>
+                    <div class="input-wrapper">
+                        <input type="number" id="areaConstruida" placeholder="0,00" min="0" step="0.01">
+                        <span class="suffix">m²</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Preço Base <span class="required">*</span></label>
+                    <div class="input-wrapper">
+                        <span class="prefix">R$</span>
+                        <input type="number" id="precoBase" placeholder="0,00" min="0" step="0.01">
+                        <span class="suffix">/m²</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Total Base</label>
+                    <div class="input-wrapper">
+                        <span class="prefix">R$</span>
+                        <input type="text" id="totalBase" readonly placeholder="0,00" style="background: var(--gray-50); color: var(--gray-600);">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card fade-in">
+            <div class="card-header">
+                <div class="card-icon">
+                    <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+                </div>
+                <div>
+                    <div class="card-title">Complexidade Estrutural</div>
+                    <div class="card-subtitle">Elementos que aplicam acréscimo ao projeto</div>
+                </div>
+            </div>
+
+            <div id="complexityList" class="complexity-list"></div>
+
+            <button class="btn btn-outline" onclick="addComplexityItem()" style="margin-top: 16px;">
+                <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Adicionar Item de Complexidade
+            </button>
+
+            <div class="summary-box">
+                <div class="summary-row">
+                    <span class="summary-label">Total Acréscimo</span>
+                    <span class="summary-value" id="totalAcrescimo" style="color: var(--accent);">R$ 0,00</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card fade-in">
+            <div class="card-header">
+                <div class="card-icon">
+                    <svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                </div>
+                <div>
+                    <div class="card-title">Resumo Financeiro</div>
+                    <div class="card-subtitle">Detalhamento dos valores</div>
+                </div>
+            </div>
+
+            <div class="summary-box">
+                <div class="summary-row">
+                    <span class="summary-label">Total Base</span>
+                    <span class="summary-value" id="resumoBase">R$ 0,00</span>
+                </div>
+                <div class="summary-row">
+                    <span class="summary-label">Total com Acréscimo</span>
+                    <span class="summary-value" id="resumoAcrescimo">R$ 0,00</span>
+                </div>
+                <div class="summary-row">
+                    <span class="summary-label">Nota Fiscal (5%)</span>
+                    <span class="summary-value" id="resumoNF">R$ 0,00</span>
+                </div>
+            </div>
+
+            <div class="total-final">
+                <span class="summary-label">Preço Final</span>
+                <span class="summary-value" id="precoFinal">R$ 0,00</span>
+            </div>
+        </div>
+
+        <div class="card fade-in">
+            <div class="actions">
+                <button class="btn btn-pdf" onclick="gerarPDF()">
+                    <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                    Gerar PDF Profissional
+                </button>
+                <button class="btn btn-success" onclick="salvarDados()">
+                    <svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                    Salvar Rascunho
+                </button>
+                <button class="btn btn-secondary" onclick="limparFormulario()">
+                    <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                    Limpar Tudo
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <div class="loading-text">Gerando PDF Profissional</div>
+            <div class="loading-subtext">Processando documento...</div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast">
+        <div class="toast-icon">
+            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <div class="toast-text" id="toastText">Operação realizada com sucesso!</div>
+    </div>
+
+    <script>
+        let complexityItems = [];
+        let itemIdCounter = 0;
+
+        const tiposComplexidade = [
+            { nome: 'BALANÇO (2 à 4m)', acrescimo: 10 },
+            { nome: 'BALANÇO (>4m)', acrescimo: 20 },
+            { nome: 'VIGA DE TRANSIÇÃO (2-4m)', acrescimo: 10 },
+            { nome: 'VIGA DE TRANSIÇÃO (4-6m)', acrescimo: 15 },
+            { nome: 'VIGA DE TRANSIÇÃO (>6m)', acrescimo: 20 },
+            { nome: 'VIGA VÃO (6-9m)', acrescimo: 10 },
+            { nome: 'VIGA VÃO (>9m)', acrescimo: 15 },
+            { nome: 'ESCADA MODERNA', acrescimo: 7 },
+            { nome: 'TERRENO DESNÍVEL (3-6m)', acrescimo: 10 },
+            { nome: 'TERRENO DESNÍVEL (>6m)', acrescimo: 15 },
+            { nome: 'FUNDAÇÃO PROFUNDA', acrescimo: 15 },
+            { nome: 'FUNDAÇÃO EXCÊNTRICA', acrescimo: 10 },
+            { nome: 'PISCINA NA COBERTURA', acrescimo: 20 },
+            { nome: 'Detalhe a mais', acrescimo: 10 }
+        ];
+
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const toastText = document.getElementById('toastText');
+            toastText.textContent = message;
+            toast.className = `toast ${type} show`;
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        function addComplexityItem() {
+            const itemId = itemIdCounter++;
+            const item = {
+                id: itemId,
+                tipo: '',
+                quantidade: 0,
+                acrescimoPercentual: 0
+            };
+            complexityItems.push(item);
+            renderComplexityItems();
+        }
+
+        function removeComplexityItem(id) {
+            complexityItems = complexityItems.filter(item => item.id !== id);
+            renderComplexityItems();
+            calcularTotais();
+        }
+
+        function renderComplexityItems() {
+            const container = document.getElementById('complexityList');
+            container.innerHTML = '';
+
+            if (complexityItems.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                        <p>Nenhum item adicionado. Clique no botão abaixo para adicionar.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            complexityItems.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'complexity-item';
+                
+                const tipoSelect = document.createElement('select');
+                tipoSelect.innerHTML = '<option value="">Selecione o tipo...</option>';
+                tiposComplexidade.forEach(tipo => {
+                    const option = document.createElement('option');
+                    option.value = tipo.nome;
+                    option.textContent = `${tipo.nome} (${tipo.acrescimo}%)`;
+                    if (item.tipo === tipo.nome) {
+                        option.selected = true;
+                    }
+                    tipoSelect.appendChild(option);
+                });
+
+                const qtdInput = document.createElement('input');
+                qtdInput.type = 'number';
+                qtdInput.min = '0';
+                qtdInput.value = item.quantidade || '';
+                qtdInput.placeholder = 'Qtd';
+
+                const acrescimoDisplay = document.createElement('div');
+                acrescimoDisplay.className = 'percent-display';
+                acrescimoDisplay.textContent = item.acrescimoPercentual ? `${item.acrescimoPercentual}%` : '-';
+
+                const valorDisplay = document.createElement('div');
+                valorDisplay.className = 'value-display';
+                valorDisplay.textContent = calcularValorItem(item);
+
+                const removeBtn = document.createElement('button');
+                removeBtn.className = 'btn btn-danger';
+                removeBtn.innerHTML = '<svg viewBox="0 0 24 24" style="width:14px;height:14px;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
+                removeBtn.onclick = () => removeComplexityItem(item.id);
+
+                tipoSelect.onchange = (e) => {
+                    item.tipo = e.target.value;
+                    const tipo = tiposComplexidade.find(t => t.nome === e.target.value);
+                    item.acrescimoPercentual = tipo ? tipo.acrescimo : 0;
+                    renderComplexityItems();
+                    calcularTotais();
+                };
+
+                qtdInput.oninput = (e) => {
+                    item.quantidade = parseFloat(e.target.value) || 0;
+                    calcularTotais();
+                    renderComplexityItems();
+                };
+
+                div.appendChild(tipoSelect);
+                div.appendChild(qtdInput);
+                div.appendChild(acrescimoDisplay);
+                div.appendChild(valorDisplay);
+                div.appendChild(removeBtn);
+
+                container.appendChild(div);
+            });
+        }
+
+        function calcularValorItem(item) {
+            if (!item.tipo || !item.quantidade) return 'R$ 0,00';
+            const area = parseFloat(document.getElementById('areaConstruida').value) || 0;
+            const precoBase = parseFloat(document.getElementById('precoBase').value) || 0;
+            const totalBase = area * precoBase;
+            const valor = totalBase * (item.acrescimoPercentual / 100) * item.quantidade;
+            return `R$ ${valor.toFixed(2).replace('.', ',')}`;
+        }
+
+        function calcularTotais() {
+            const area = parseFloat(document.getElementById('areaConstruida').value) || 0;
+            const precoBase = parseFloat(document.getElementById('precoBase').value) || 0;
+            const totalBase = area * precoBase;
+
+            document.getElementById('totalBase').value = `R$ ${totalBase.toFixed(2).replace('.', ',')}`;
+            document.getElementById('resumoBase').textContent = `R$ ${totalBase.toFixed(2).replace('.', ',')}`;
+
+            let totalAcrescimo = 0;
+            complexityItems.forEach(item => {
+                if (item.tipo && item.quantidade) {
+                    const valor = totalBase * (item.acrescimoPercentual / 100) * item.quantidade;
+                    totalAcrescimo += valor;
+                }
+            });
+
+            const totalComAcrescimo = totalBase + totalAcrescimo;
+            const notaFiscal = totalComAcrescimo * 0.05;
+            const precoFinal = totalComAcrescimo + notaFiscal;
+
+            document.getElementById('totalAcrescimo').textContent = `R$ ${totalAcrescimo.toFixed(2).replace('.', ',')}`;
+            document.getElementById('resumoAcrescimo').textContent = `R$ ${totalComAcrescimo.toFixed(2).replace('.', ',')}`;
+            document.getElementById('resumoNF').textContent = `R$ ${notaFiscal.toFixed(2).replace('.', ',')}`;
+            document.getElementById('precoFinal').textContent = `R$ ${precoFinal.toFixed(2).replace('.', ',')}`;
+        }
+
+        function formatarMoeda(valor) {
+            return `R$ ${valor.toFixed(2).replace('.', ',')}`;
+        }
+
+        function formatarData(data) {
+            if (!data) return '-';
+            const partes = data.split('-');
+            return `${partes[2]}/${partes[1]}/${partes[0]}`;
+        }
+
+        function gerarPDF() {
+            const cliente = document.getElementById('cliente').value;
+            const area = parseFloat(document.getElementById('areaConstruida').value) || 0;
+            const precoBase = parseFloat(document.getElementById('precoBase').value) || 0;
+
+            if (!cliente || !area || !precoBase) {
+                showToast('Preencha todos os campos obrigatórios!', 'error');
+                return;
+            }
+
+            if (complexityItems.length === 0 || !complexityItems.some(item => item.tipo)) {
+                showToast('Adicione pelo menos um item de complexidade!', 'error');
+                return;
+            }
+
+            document.getElementById('loadingOverlay').classList.add('active');
+
+            setTimeout(() => {
+                try {
+                    const { jsPDF } = window.jspdf;
+                    const doc = new jsPDF('p', 'mm', 'a4');
+                    
+                    const pageWidth = doc.internal.pageSize.getWidth();
+                    const pageHeight = doc.internal.pageSize.getHeight();
+                    const margin = 15;
+
+                    const corPrimaria = [15, 23, 42];
+                    const corSecundaria = [59, 130, 246];
+                    const corDestaque = [16, 185, 129];
+                    const corTexto = [30, 41, 59];
+                    const corCinza = [100, 116, 139];
+
+                    // Header
+                    doc.setFillColor(...corPrimaria);
+                    doc.rect(0, 0, pageWidth, 50, 'F');
+                    
+                    doc.setFillColor(...corSecundaria);
+                    doc.rect(0, 50, pageWidth, 4, 'F');
+
+                    doc.setTextColor(255, 255, 255);
+                    doc.setFontSize(24);
+                    doc.setFont('helvetica', 'bold');
+                    doc.text('ORÇAMENTO PROJETO ESTRUTURAL', pageWidth / 2, 22, { align: 'center' });
+                    
+                    doc.setFontSize(11);
+                    doc.setFont('helvetica', 'normal');
+                    doc.text('SISTEMA PROFISSIONAL DE PRECIFICAÇÃO', pageWidth / 2, 32, { align: 'center' });
+
+                    const orcamentoNum = document.getElementById('orcamentoNum').value || '001';
+                    doc.setFontSize(10);
+                    doc.text(`Orçamento Nº ${orcamentoNum}`, pageWidth / 2, 42, { align: 'center' });
+
+                    // Informações do Cliente
+                    let yPos = 65;
+                    doc.setTextColor(...corTexto);
+                    doc.setFontSize(13);
+                    doc.setFont('helvetica', 'bold');
+                    doc.text('INFORMAÇÕES DO CLIENTE', margin, yPos);
+                    yPos += 2;
+                    doc.setDrawColor(...corSecundaria);
+                    doc.setLineWidth(0.8);
+                    doc.line(margin, yPos, pageWidth - margin, yPos);
+                    yPos += 10;
+
+                    doc.setFontSize(10);
+                    doc.setFont('helvetica', 'normal');
+                    
+                    const clienteData = [
+                        ['Cliente:', document.getElementById('cliente').value || '-'],
+                        ['Elaborado Por:', document.getElementById('elaboradoPor').value || '-'],
+                        ['Data:', formatarData(document.getElementById('dataOrcamento').value)],
+                        ['Tipo de Projeto:', document.getElementById('descricao').value]
+                    ];
+
+                    clienteData.forEach(([label, value]) => {
+                        doc.setFont('helvetica', 'bold');
+                        doc.setTextColor(...corTexto);
+                        doc.text(label, margin, yPos);
+                        doc.setFont('helvetica', 'normal');
+                        doc.setTextColor(80, 80, 80);
+                        doc.text(value, margin + 45, yPos);
+                        yPos += 7;
+                    });
+
+                    // Dados do Projeto
+                    yPos += 5;
+                    doc.setFontSize(13);
+                    doc.setFont('helvetica', 'bold');
+                    doc.setTextColor(...corTexto);
+                    doc.text('DADOS DO PROJETO', margin, yPos);
+                    yPos += 2;
+                    doc.setDrawColor(...corSecundaria);
+                    doc.line(margin, yPos, pageWidth - margin, yPos);
+                    yPos += 10;
+
+                    const totalBase = area * precoBase;
+                    const dadosProjeto = [
+                        ['Área Construída:', `${area.toFixed(2)} m²`],
+                        ['Preço Base:', formatarMoeda(precoBase) + ' /m²'],
+                        ['Total Base:', formatarMoeda(totalBase)]
+                    ];
+
+                    doc.setFontSize(10);
+                    dadosProjeto.forEach(([label, value]) => {
+                        doc.setFont('helvetica', 'bold');
+                        doc.setTextColor(...corTexto);
+                        doc.text(label, margin, yPos);
+                        doc.setFont('helvetica', 'normal');
+                        doc.setTextColor(80, 80, 80);
+                        doc.text(value, margin + 45, yPos);
+                        yPos += 7;
+                    });
+
+                    // Tabela de Complexidade
+                    yPos += 10;
+                    doc.setFontSize(13);
+                    doc.setFont('helvetica', 'bold');
+                    doc.setTextColor(...corTexto);
+                    doc.text('COMPLEXIDADE ESTRUTURAL', margin, yPos);
+                    yPos += 2;
+                    doc.setDrawColor(...corSecundaria);
+                    doc.line(margin, yPos, pageWidth - margin, yPos);
+                    yPos += 5;
+
+                    const tableData = [];
+                    let totalAcrescimo = 0;
+                    
+                    complexityItems.forEach(item => {
+                        if (item.tipo && item.quantidade) {
+                            const valor = totalBase * (item.acrescimoPercentual / 100) * item.quantidade;
+                            totalAcrescimo += valor;
+                            tableData.push([
+                                item.tipo,
+                                item.quantidade.toString(),
+                                item.acrescimoPercentual + '%',
+                                formatarMoeda(valor)
+                            ]);
+                        }
+                    });
+
+                    tableData.push(['', '', 'TOTAL ACRÉSCIMO', formatarMoeda(totalAcrescimo)]);
+
+                    doc.autoTable({
+                        startY: yPos,
+                        head: [['Tipo', 'Qtd.', 'Acréscimo', 'Valor (R$)']],
+                        body: tableData,
+                        theme: 'grid',
+                        headStyles: {
+                            fillColor: corPrimaria,
+                            textColor: [255, 255, 255],
+                            fontStyle: 'bold',
+                            halign: 'center',
+                            fontSize: 10
+                        },
+                        bodyStyles: {
+                            textColor: corTexto,
+                            fontSize: 9
+                        },
+                        columnStyles: {
+                            0: { cellWidth: 80 },
+                            1: { halign: 'center', cellWidth: 20 },
+                            2: { halign: 'center', cellWidth: 30 },
+                            3: { halign: 'right', cellWidth: 40 }
+                        },
+                        alternateRowStyles: {
+                            fillColor: [248, 250, 252]
+                        },
+                        margin: { left: margin, right: margin },
+                        didParseCell: function(data) {
+                            if (data.row.index === tableData.length - 1) {
+                                data.cell.styles.fillColor = [220, 252, 231];
+                                data.cell.styles.fontStyle = 'bold';
+                                data.cell.styles.textColor = [16, 185, 129];
+                            }
+                        }
+                    });
+
+                    yPos = doc.lastAutoTable.finalY + 15;
+
+                    // Resumo Financeiro
+                    doc.setFontSize(13);
+                    doc.setFont('helvetica', 'bold');
+                    doc.setTextColor(...corTexto);
+                    doc.text('RESUMO FINANCEIRO', margin, yPos);
+                    yPos += 2;
+                    doc.setDrawColor(...corSecundaria);
+                    doc.line(margin, yPos, pageWidth - margin, yPos);
+                    yPos += 10;
+
+                    const totalComAcrescimo = totalBase + totalAcrescimo;
+                    const notaFiscal = totalComAcrescimo * 0.05;
+                    const precoFinal = totalComAcrescimo + notaFiscal;
+
+                    const resumoData = [
+                        ['Total Base:', formatarMoeda(totalBase)],
+                        ['Total com Acréscimo:', formatarMoeda(totalComAcrescimo)],
+                        ['Nota Fiscal (5%):', formatarMoeda(notaFiscal)],
+                        ['PREÇO FINAL:', formatarMoeda(precoFinal)]
+                    ];
+
+                    doc.setFontSize(11);
+                    resumoData.forEach(([label, value], index) => {
+                        const isFinal = index === resumoData.length - 1;
+                        
+                        if (isFinal) {
+                            doc.setFillColor(...corDestaque);
+                            doc.roundedRect(margin, yPos - 5, pageWidth - 2 * margin, 12, 2, 2, 'F');
+                            doc.setTextColor(255, 255, 255);
+                            doc.setFont('helvetica', 'bold');
+                            doc.setFontSize(13);
+                        } else {
+                            doc.setTextColor(...corTexto);
+                            doc.setFont('helvetica', index === 0 ? 'bold' : 'normal');
+                            doc.setFontSize(11);
+                        }
+                        
+                        doc.text(label, margin + 5, yPos + 2);
+                        doc.text(value, pageWidth - margin - 5, yPos + 2, { align: 'right' });
+                        yPos += 10;
+                    });
+
+                    // Rodapé
+                    yPos = pageHeight - 20;
+                    doc.setDrawColor(200, 200, 200);
+                    doc.setLineWidth(0.3);
+                    doc.line(margin, yPos, pageWidth - margin, yPos);
+                    yPos += 5;
+
+                    doc.setFontSize(8);
+                    doc.setFont('helvetica', 'italic');
+                    doc.setTextColor(...corCinza);
+                    doc.text('Documento gerado automaticamente pelo Sistema de Precificação de Projetos Estruturais', pageWidth / 2, yPos, { align: 'center' });
+                    yPos += 4;
+                    doc.text('Este orçamento tem validade de 30 dias a partir da data de emissão.', pageWidth / 2, yPos, { align: 'center' });
+
+                    const fileName = `Orcamento_${orcamentoNum}_${cliente.replace(/\s+/g, '_')}.pdf`;
+                    doc.save(fileName);
+
+                    document.getElementById('loadingOverlay').classList.remove('active');
+                    showToast('PDF gerado com sucesso!');
+                } catch (error) {
+                    document.getElementById('loadingOverlay').classList.remove('active');
+                    showToast('Erro ao gerar PDF: ' + error.message, 'error');
+                    console.error(error);
+                }
+            }, 800);
+        }
+
+        function limparFormulario() {
+            if (confirm('Tem certeza que deseja limpar todos os dados?')) {
+                document.getElementById('cliente').value = '';
+                document.getElementById('orcamentoNum').value = '';
+                document.getElementById('elaboradoPor').value = '';
+                document.getElementById('dataOrcamento').value = '';
+                document.getElementById('areaConstruida').value = '';
+                document.getElementById('precoBase').value = '';
+                complexityItems = [];
+                renderComplexityItems();
+                calcularTotais();
+                showToast('Formulário limpo com sucesso!');
+            }
+        }
+
+        function salvarDados() {
+            const dados = {
+                cliente: document.getElementById('cliente').value,
+                orcamentoNum: document.getElementById('orcamentoNum').value,
+                elaboradoPor: document.getElementById('elaboradoPor').value,
+                dataOrcamento: document.getElementById('dataOrcamento').value,
+                descricao: document.getElementById('descricao').value,
+                areaConstruida: document.getElementById('areaConstruida').value,
+                precoBase: document.getElementById('precoBase').value,
+                complexityItems: complexityItems
+            };
+
+            localStorage.setItem('orcamentoEstrutural', JSON.stringify(dados));
+            showToast('Rascunho salvo com sucesso!');
+        }
+
+        function carregarDados() {
+            const dadosSalvos = localStorage.getItem('orcamentoEstrutural');
+            if (dadosSalvos) {
+                const dados = JSON.parse(dadosSalvos);
+                document.getElementById('cliente').value = dados.cliente || '';
+                document.getElementById('orcamentoNum').value = dados.orcamentoNum || '';
+                document.getElementById('elaboradoPor').value = dados.elaboradoPor || '';
+                document.getElementById('dataOrcamento').value = dados.dataOrcamento || '';
+                document.getElementById('descricao').value = dados.descricao || 'Residência Alto Padrão';
+                document.getElementById('areaConstruida').value = dados.areaConstruida || '';
+                document.getElementById('precoBase').value = dados.precoBase || '';
+                complexityItems = dados.complexityItems || [];
+                renderComplexityItems();
+                calcularTotais();
+            }
+        }
+
+        document.getElementById('areaConstruida').addEventListener('input', calcularTotais);
+        document.getElementById('precoBase').addEventListener('input', calcularTotais);
+
+        carregarDados();
+        addComplexityItem();
+
+        if (!document.getElementById('dataOrcamento').value) {
+            document.getElementById('dataOrcamento').value = new Date().toISOString().split('T')[0];
+        }
+    </script>
+</body>
+</html>
+v
